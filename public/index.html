@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vocabulary Parser</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Vocabulary Parser</h1>
+      <p>Upload PDF, DOC, or DOCX with vocabulary pairs (e.g. <code>word - translation</code> or <code>word - trans1 / trans2</code>) and download a UTF-8 .txt file.</p>
+    </header>
+
+    <section class="upload">
+      <label for="file">Choose file</label>
+      <input type="file" id="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+      <button type="button" id="parseBtn" disabled>Parse</button>
+    </section>
+
+    <section class="status" id="status" aria-live="polite"></section>
+    <section class="warnings" id="warnings" aria-live="polite"></section>
+    <section class="stats" id="stats"></section>
+
+    <section class="results" id="results" hidden>
+      <h2>Preview</h2>
+      <div class="table-wrap">
+        <table id="previewTable">
+          <thead>
+            <tr>
+              <th>Word / phrase</th>
+              <th>Translation 1</th>
+              <th>Translation 2</th>
+            </tr>
+          </thead>
+          <tbody id="previewBody"></tbody>
+        </table>
+      </div>
+      <button type="button" id="downloadBtn">Download .txt</button>
+    </section>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>

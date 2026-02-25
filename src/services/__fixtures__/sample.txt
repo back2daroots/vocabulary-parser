@@ -1,0 +1,22 @@
+a dog - собака
+the cat - кот
+bird - птица
+hello - привет
+world - мир
+  extra   spaces   -   перевод
+a/an/the article - артикль
+multi word phrase - несколько слов
+don't / won't - не буду
+Cyrillic слово - word
+два - two
+synonym pair - перевод1, перевод2
+только два - one, two, three
+word with slash - syn1 / syn2
+page
+1
+2
+empty side -
+ - missing left
+123
+no-separator here
+"quoted" word - "кавычки"
