@@ -1,0 +1,7 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+  #  volumes:
+  #    - ${HOME}/Documents/PROG/PROJECTS/doc-to-reword/app:/app/app

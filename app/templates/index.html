@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doc to Reword Converter</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <main class="container">
+        <h1>Doc to Reword Converter</h1>
+        <p class="subtitle">Convert PDF, DOCX, or DOC documents to Reword vocabulary format</p>
+
+        <form id="convert-form" class="form">
+            <div class="form-group">
+                <label for="file">Document (PDF, DOCX, DOC)</label>
+                <input type="file" id="file" name="file" accept=".pdf,.docx,.doc" required>
+            </div>
+            <div class="form-group">
+                <label for="mode">Synonym mode</label>
+                <select id="mode" name="mode">
+                    <option value="keep">Keep (full translation as-is)</option>
+                    <option value="explode">Explode (one line per synonym)</option>
+                </select>
+            </div>
+            <button type="submit" id="submit-btn">Convert</button>
+        </form>
+
+        <div id="message" class="message" role="alert" hidden></div>
+        <div id="results" class="results" hidden>
+            <div class="stats">
+                <span id="pairs-count">0</span> pairs found,
+                <span id="skipped-count">0</span> skipped
+            </div>
+            <a id="download-link" href="#" class="download-btn">Download vocabulary.txt</a>
+            <div class="preview-section">
+                <h3>Preview (first 20 lines)</h3>
+                <pre id="preview"></pre>
+            </div>
+        </div>
+    </main>
+    <script src="/static/app.js"></script>
+</body>
+</html>
