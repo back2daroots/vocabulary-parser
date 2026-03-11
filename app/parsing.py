@@ -10,6 +10,9 @@ from typing import Literal
 # Dash variants: hyphen, en dash, em dash, minus
 DASH_PATTERN = re.compile(r"[\-\u2013\u2014\u2212]")
 
+# URL detection: we skip these lines entirely (they often contain '-' inside domains/paths).
+URL_MARKER = re.compile(r"(https?://|www\.)", re.IGNORECASE)
+
 # Bullets/numbering prefixes to strip
 BULLET_PREFIX = re.compile(
     r"^\s*(?:[\u2022\u2023\u25E6\u2043\u2219\-\*\•]|\d+[\.\)]|\(\d+\))\s*",
@@ -95,6 +98,18 @@ def parse_pairs(
 
     for line in text.splitlines():
         line = line.strip()
+        if not line:
+            continue
+
+        # Skip link-like lines (common in worksheets/exports); these frequently contain hyphens
+        # that would be misinterpreted as "word - translation".
+        if URL_MARKER.search(line):
+            skipped += 1
+            continue
+
+        # Strip bullets/numbering from the whole line before searching for the separator dash.
+        # This prevents cases like "- elderberry - бузина" from being mis-split on the bullet.
+        line = BULLET_PREFIX.sub("", line).strip()
         if not line:
             continue
 

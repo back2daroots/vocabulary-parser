@@ -82,3 +82,16 @@ def test_extra_whitespace():
     assert len(pairs) == 1
     assert pairs[0].source == "word"
     assert pairs[0].translation == "translation"
+
+
+def test_url_lines_skipped():
+    """Skip lines that contain URLs to avoid false positives from hyphens inside links."""
+    text = """
+https://www.perfect-english-grammar.com/present-simple-exercise-16.html
+word - translation
+"""
+    pairs, skipped = parse_pairs(text, mode="keep")
+    assert len(pairs) == 1
+    assert pairs[0].source == "word"
+    assert pairs[0].translation == "translation"
+    assert skipped >= 1
