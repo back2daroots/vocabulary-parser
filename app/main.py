@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Callable
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -53,10 +53,19 @@ def _convert(
     return formatted, len(pairs), skipped
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.api_route("/", methods=["GET", "HEAD"], response_class=HTMLResponse)
 async def index(request: Request):
-    """Serve the main UI."""
+    """Serve the main UI. HEAD allowed for health checks."""
+    if request.method == "HEAD":
+        return Response(status_code=200)
     return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/health")
+@app.head("/health")
+async def health():
+    """Health check for load balancers and monitors."""
+    return {"status": "ok"}
 
 
 @app.post("/api/convert")
