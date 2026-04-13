@@ -1,16 +1,20 @@
 # syntax=docker/dockerfile:1
-# Multi-arch: linux/amd64 and linux/arm64 (Apple Silicon)
 FROM node:20-bookworm-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libreoffice-writer \
     libreoffice-common \
+    python3 \
+    make \
+    g++ \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY package.json ./
-RUN npm install --omit=dev
+COPY package-lock.json ./
+RUN npm config set fund false && npm config set audit false \
+    && npm install
 
 COPY tsconfig.json ./
 COPY src ./src
