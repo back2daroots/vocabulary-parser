@@ -1,13 +1,16 @@
 # syntax=docker/dockerfile:1
 FROM node:20-bookworm-slim
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libreoffice-writer \
-    libreoffice-common \
-    python3 \
-    make \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
+RUN set -eux; \
+    apt-get -o Acquire::Retries=3 update; \
+    apt-get -o Acquire::Retries=3 install -y --no-install-recommends \
+      python3 \
+      make \
+      g++; \
+    if ! apt-get -o Acquire::Retries=3 install -y --no-install-recommends libreoffice-writer; then \
+      apt-get -o Acquire::Retries=3 install -y --no-install-recommends libreoffice; \
+    fi; \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
