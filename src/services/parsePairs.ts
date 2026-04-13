@@ -5,6 +5,8 @@ const SEPARATOR_REGEX = /\s*-\s*/;
 
 /** At least one letter (Latin or Cyrillic) */
 const HAS_LETTER = /[\p{L}]/u;
+const MAX_SOURCE_LINE_LENGTH = 120;
+const HAS_LINK = /\b(?:https?:\/\/|www\.)\S+|\b[a-z0-9-]+(?:\.[a-z0-9-]+)+\b/i;
 
 export interface ParsePairsResult {
   pairs: VocabPair[];
@@ -40,6 +42,16 @@ export function parsePairs(rawText: string): ParsePairsResult {
 
   for (const line of lines) {
     if (/^\d+$/.test(line)) {
+      skippedLines++;
+      continue;
+    }
+
+    if (line.length > MAX_SOURCE_LINE_LENGTH) {
+      skippedLines++;
+      continue;
+    }
+
+    if (HAS_LINK.test(line)) {
       skippedLines++;
       continue;
     }

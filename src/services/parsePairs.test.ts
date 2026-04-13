@@ -73,6 +73,23 @@ describe("parsePairs", () => {
     expect(skippedLines).toBeGreaterThanOrEqual(2);
   });
 
+  it("skips very long lines", () => {
+    const longLeft = "a".repeat(121);
+    const { pairs, skippedLines } = parsePairs(`${longLeft} - перевод\ndog - собака`);
+    expect(pairs).toHaveLength(1);
+    expect(pairs[0].word).toBe("dog");
+    expect(skippedLines).toBeGreaterThanOrEqual(1);
+  });
+
+  it("skips lines containing links", () => {
+    const { pairs, skippedLines } = parsePairs(
+      "https://www.englishgrammar.at - online_exercises\nword - слово\nenglish-practice.net - adjective-endings"
+    );
+    expect(pairs).toHaveLength(1);
+    expect(pairs[0].word).toBe("word");
+    expect(skippedLines).toBeGreaterThanOrEqual(2);
+  });
+
   it("skips lines without separator", () => {
     const { pairs, skippedLines } = parsePairs("no-separator here\ndog - собака");
     expect(pairs).toHaveLength(1);

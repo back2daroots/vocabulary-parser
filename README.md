@@ -35,15 +35,83 @@ If `vocabulary-parser` is inside another git repo (e.g. your home directory), ru
 
 ## Quick start
 
+### 1. Prerequisites
+
+- **Docker Desktop** for Mac ([docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop)). Works on Apple Silicon (M1/M2) and Intel.
+- No need to install Node.js or LibreOffice on your machine; they run inside the container.
+
+### 2. Build and run
+
+From the project directory:
+
 ```bash
+cd /Users/rutz/vocabulary-parser
 docker compose up --build
 ```
 
-Then open **http://localhost:3000** in your browser.
+The first run will build the image (install Node, LibreOffice, dependencies, compile TypeScript). Later runs are quick.
 
-- **Upload** a file (PDF, DOC, or DOCX).
-- Click **Parse** to extract pairs.
-- Review the **preview table** and **Download .txt** for the result.
+When you see something like:
+
+```
+web  | Vocabulary parser listening on http://0.0.0.0:3000
+```
+
+the app is ready.
+
+### 3. Open the app
+
+In your browser go to: **http://localhost:3000**
+
+- Choose a **PDF**, **DOC**, or **DOCX** file with lines like `word - translation`.
+- Click **Parse**.
+- Check the preview table and click **Download .txt** for the UTF-8 file.
+
+### 4. Quick checks (testing)
+
+**Health endpoint:**
+
+```bash
+curl http://localhost:3000/health
+# → {"status":"ok"}
+```
+
+**Parse API** (replace `sample.pdf` with a real file):
+
+```bash
+curl -X POST -F "file=@sample.pdf" http://localhost:3000/api/parse
+# → JSON with pairs, txt, warnings, stats
+```
+
+**Stop the app:** `Ctrl+C` in the terminal, or in another terminal:
+
+```bash
+docker compose down
+```
+
+---
+
+## Running unit tests
+
+Unit tests use **Vitest** and don’t need Docker. Run them on your machine:
+
+```bash
+cd /Users/rutz/vocabulary-parser
+npm install
+npm run test
+```
+
+You need Node.js 18+ and npm. Tests cover parsing (hyphen separator, comma/slash synonyms, dedupe, skips, etc.).
+
+To run tests **inside Docker** (e.g. same Node version as production), mount the project and install dev deps in the container:
+
+```bash
+docker compose run --rm -v "$(pwd)":/app web sh -c "npm install --include=dev && npx vitest run"
+```
+
+(Your image does not include test files by default, so the volume mount is needed.)
+
+---
 
 The app runs on **port 3000** (configurable via `PORT`).
 
@@ -112,6 +180,22 @@ npm run test   # run unit tests
 ```
 
 ## Troubleshooting
+
+### Docker build fails at `npm install` (exit code 1)
+
+- **See the real error:** Run a clean build and capture the log:
+  ```bash
+  docker compose build --no-cache --progress=plain 2>&1 | tee build.log
+  ```
+  Open `build.log` and search for the first `npm ERR!` or error line above the "exit code 1" message.
+
+- **Network/timeout:** If the error mentions `EAI_AGAIN`, `ETIMEDOUT`, or registry, retry after a few minutes or check your network/VPN. In Docker Desktop, increase timeout or use a different DNS if needed.
+
+- **Memory:** If the build dies during install (no clear error), give Docker more memory (Docker Desktop → Settings → Resources).
+
+- **Build tools:** The Dockerfile already installs `python3`, `make`, and `g++` so optional native modules can compile. If your error is about "node-gyp" or "gyp", ensure you’re using the updated Dockerfile that includes those packages.
+
+- **Reproducible install:** From the project root run `npm install` once on your machine to generate `package-lock.json`, commit it, and rebuild. That locks dependency versions and can avoid bad resolutions in Docker.
 
 ### DOC conversion fails or produces empty text
 
